@@ -49,6 +49,8 @@
             <Label Content="Current Lap Information" Style="{StaticResource LabelStyle}"/>
             <TextBlock Text="{Binding CurrentLap.Number, StringFormat='Lap: {0}'}" Style="{StaticResource TextBlockStyle}"/>
             <TextBlock Text="{Binding CurrentLap.StartingFuel, StringFormat='Starting Fuel: {0:F2}'}" Style="{StaticResource TextBlockStyle}"/>
+            <TextBlock Text="{Binding CurrentLap.IsInLap, StringFormat='Is In Lap: {0}'}" Style="{StaticResource TextBlockStyle}"/>
+            <TextBlock Text="{Binding CurrentLap.IsOutLap, StringFormat='Is Out Lap: {0}'}" Style="{StaticResource TextBlockStyle}"/>
 
             <Label Content="Session and Service Information" Style="{StaticResource LabelStyle}" Margin="0,10,0,0"/>
             <TextBlock Text="{Binding IsInService, StringFormat='In Service: {0}'}" Style="{StaticResource TextBlockStyle}"/>

@@ -96,8 +96,8 @@
             <!-- Fifth Row: 5L Data -->
             <Label Grid.Row="4" Content="{Binding Strategies[2].Name}" Style="{StaticResource LabelStyle}"/>
             <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding FuelConsumption, StringFormat=N2}" Style="{StaticResource TextBlockStyle}" DataContext="{Binding Strategies[2]}"/>
-            <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding RefuelAmount, StringFormat=N2}" Style="{StaticResource RefuelRequiredTextBlockStyle}" DataContext="{Binding Strategies[2]}"/>
-            <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding LapsOfFuelRemaining, StringFormat=N2}" Style="{StaticResource TextBlockStyle}" DataContext="{Binding Strategies[2]}"/>
+            <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding RefuelAmount, StringFormat={}{0:F2}}" Style="{StaticResource RefuelRequiredTextBlockStyle}" DataContext="{Binding Strategies[2]}"/>
+            <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding LapsOfFuelRemaining, StringFormat={}{0:F2}}" Style="{StaticResource TextBlockStyle}" DataContext="{Binding Strategies[2]}"/>
         </Grid>
     </Border>
 </Window>

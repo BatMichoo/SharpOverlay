@@ -30,5 +30,7 @@ namespace SharpOverlay.Models
         public double StartingFuel { get; set; }
         public double EndingFuel { get; set; }
         public double FuelUsed { get; set; }
+        public bool IsInLap { get; set; }
+        public bool IsOutLap { get; set; }
     }
 }

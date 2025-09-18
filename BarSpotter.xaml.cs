@@ -109,10 +109,8 @@ namespace SharpOverlay
                 if (carLeftRight == Enums.CarLeftRight.irsdk_LRClear)
                 {
                     CarClear();
-                    return;
                 }
-
-                if (carLeftRight == Enums.CarLeftRight.irsdk_LRCarLeft)
+                else if (carLeftRight == Enums.CarLeftRight.irsdk_LRCarLeft)
                 {
                     double pixelOffset = PixelOffset();
 
@@ -123,9 +121,7 @@ namespace SharpOverlay
                 }
                 else if (carLeftRight == Enums.CarLeftRight.irsdk_LRCarRight)
                 {
-                    double offset = _service.CenterOffset();
-
-                    var pixelOffset = grid.ActualHeight * -offset;
+                    var pixelOffset = PixelOffset();
 
                     RenderRightBar(pixelOffset);
                     rightCanvas.Visibility = Visibility.Visible;

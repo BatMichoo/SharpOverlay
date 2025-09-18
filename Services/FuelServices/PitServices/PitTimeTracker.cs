@@ -36,7 +36,12 @@ namespace SharpOverlay.Services.FuelServices.PitServices
 
         public TimeSpan GetAvgPitStopTime()
         {
-            return TimeSpan.FromSeconds(_pitStopDurations.Average(t => t.TotalSeconds));
+            if (_pitStopDurations.Count > 0)
+            {
+                return TimeSpan.FromSeconds(_pitStopDurations.Average(t => t.TotalSeconds));
+            }
+
+            return TimeSpan.Zero;
         }
     }
 }
