@@ -7,6 +7,5 @@
         public double LapsOfFuelRemaining { get; set; }
         public double RefuelAmount { get; set; }
         public bool DoesRequireRefueling => RefuelAmount > 0;
-        public double FuelAtEnd { get; set; }
     }
 }

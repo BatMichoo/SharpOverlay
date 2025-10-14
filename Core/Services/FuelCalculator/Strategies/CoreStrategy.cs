@@ -19,8 +19,6 @@ namespace Core.Services.FuelCalculator.Strategies
 
         private double RefuelRequired { get; set; }
 
-        private double FuelAtEnd { get; set; }
-
         public void Calculate(List<Lap> lapsCompleted, int sessionLapsRemaining)
         {
             FuelConsumption = GetAverageFuelConsumption(lapsCompleted);
@@ -45,14 +43,15 @@ namespace Core.Services.FuelCalculator.Strategies
             {
                 double fuelRequired = sessionLapsRemaining * FuelConsumption;
 
-                FuelAtEnd = currentFuelLevel - fuelRequired;
+                double fuelAtEnd = currentFuelLevel - fuelRequired;
 
-                RefuelRequired = fuelRequired - currentFuelLevel;
-
-                if (FuelAtEnd > 0 && FuelAtEnd < _fuelCutOff)
+                if (fuelAtEnd < _fuelCutOff)
                 {
-                    double difference = _fuelCutOff - FuelAtEnd;
-                    RefuelRequired += difference;
+                    RefuelRequired = _fuelCutOff - fuelAtEnd;
+                }
+                else
+                {
+                    RefuelRequired = fuelRequired - currentFuelLevel;
                 }
             }
 
@@ -63,7 +62,6 @@ namespace Core.Services.FuelCalculator.Strategies
             => new StrategyViewModel()
             {
                 Name = Name,
-                FuelAtEnd = FuelAtEnd,
                 RefuelAmount = RefuelRequired,
                 LapsOfFuelRemaining = LapsOfFuelRemaining,
                 FuelConsumption = FuelConsumption
@@ -76,13 +74,16 @@ namespace Core.Services.FuelCalculator.Strategies
         {
             if (FuelConsumption > 0)
             {
-                LapsOfFuelRemaining = currentFuelLevel / FuelConsumption;
+                LapsOfFuelRemaining = (currentFuelLevel - _fuelCutOff) / FuelConsumption;
+            }
+            else
+            {
+                LapsOfFuelRemaining = 0;
             }
         }
 
         public void Clear()
         {
-            FuelAtEnd = 0;
             RefuelRequired = 0;
             LapsOfFuelRemaining = 0;
             FuelConsumption = 0;
