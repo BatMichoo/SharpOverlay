@@ -1,7 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using Core.Models;
 using Core.Services.FuelCalculator;
+using Core.Services.FuelCalculator.Strategies;
 using Presentation.Events;
 using Presentation.Models;
 using Presentation.Services;
@@ -33,6 +36,14 @@ namespace Presentation.Overlays
             Topmost = true;
 
             InitializeComponent();
+            this.DataContext = new FuelViewModel
+            {
+                Strategies = new ObservableCollection<StrategyViewModel>{
+                    new StrategyViewModel{ Name = "FULL"},
+                    new StrategyViewModel{ Name = "LAST"},
+                    new StrategyViewModel{ Name = "5L"},
+                },
+            };
         }
 
         private void OnWindowStateChange(object? sender, WindowStateEventArgs e)

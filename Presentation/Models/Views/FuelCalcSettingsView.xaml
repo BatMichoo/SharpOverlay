@@ -1,6 +1,7 @@
 <UserControl x:Class="Presentation.Models.Views.FuelCalcSettingsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:colorpicker="clr-namespace:ColorPicker;assembly=ColorPicker"
     x:Name="FuelCalcRoot">
 
     <Grid Margin="20">
@@ -39,6 +40,14 @@
         <ToggleButton x:Name="FuelDebugModeToggle" Grid.Row="2" Grid.Column="1"
             ToolTip="Toggle to render the debug fuel View"
             IsChecked="{Binding IsInDebugMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Label Grid.Row="3" Grid.Column="0" Content="Background Color - WIP" />
+        <colorpicker:PortableColorPicker Grid.Row="3" Grid.Column="1"
+            SmallChange="5"
+            UseHintColor="True" HintColor="Transparent"
+            SelectedColor="{Binding BackgroundColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BrushToColorConverter}}"
+            ShowFractionalPart="False"
+            ShowAlpha="True" />
 
     </Grid>
 </UserControl>

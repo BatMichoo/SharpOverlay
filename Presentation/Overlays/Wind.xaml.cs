@@ -46,7 +46,7 @@ namespace Presentation.Overlays
 
         private void OnWindowStateChanged(object? sender, WindowStateEventArgs e)
         {
-            if (e.IsOpen && e.IsEnabled)
+            if ((e.IsOpen || e.IsInTestMode) && e.IsEnabled)
             {
                 Show();
             }
