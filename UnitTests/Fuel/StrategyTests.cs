@@ -25,7 +25,7 @@ namespace Tests.Fuel
         [TearDown]
         public void TearDown()
         {
-            _strategy = null;
+            _strategy.Clear(); 
         }
 
         [Test]
@@ -136,7 +136,6 @@ namespace Tests.Fuel
         {
             // Arrange
             const double startingFuel = 10.0;
-            const double currentFuel = 5.0;
             const int lapsRemaining = 5;
             const double consumption = 5.0; // Fuel required: 25.0
             const double expectedRefuel = (startingFuel - consumption - (lapsRemaining * consumption)) * -1 + FuelCutOff; // 15.0 required
@@ -161,7 +160,6 @@ namespace Tests.Fuel
             const double currentFuel = 30.0;
             const int lapsRemaining = 5;
             const double consumption = 5.0; // Fuel required: 25.0
-            const double expectedFuelAtEnd = 5.0;
 
             // Set consumption
             _strategy.Calculate(TestUtils.Laps.GenerateSeed(1, consumption, startingFuel), 0);

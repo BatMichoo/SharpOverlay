@@ -29,7 +29,7 @@ namespace Core.Services.FuelCalculator
 
         private readonly PitManager _pitManager;
         private readonly PitTimeTracker _pitTimeTracker;
-        private readonly FinishLineLocator _finishLineLocator;
+        // private readonly FinishLineLocator _finishLineLocator;
         private int _lapsRemainingInRace;
         private bool _isRaceStart;
 
@@ -45,7 +45,7 @@ namespace Core.Services.FuelCalculator
             _lapAnalyzer = new LapAnalyzer();
             _pitManager = new PitManager();
             _pitTimeTracker = new PitTimeTracker();
-            _finishLineLocator = new FinishLineLocator();
+            // _finishLineLocator = new FinishLineLocator();
 
             _repository = new FuelRepository();
 
@@ -119,7 +119,7 @@ namespace Core.Services.FuelCalculator
             _lapTracker.Clear();
             _lapAnalyzer.Clear();
             _pitManager.Clear();
-            _finishLineLocator.Clear();
+            // _finishLineLocator.Clear();
 
             _strategyList.ForEach(s => s.Clear());
         }

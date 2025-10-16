@@ -6,14 +6,15 @@ namespace Core.Services.FuelCalculator.LapServices
     {
         public int CalculateLapsRemaining(float driverPctOnTrack, TimeSpan timeRemainingInSession, TimeSpan averageLapTime)
         {
-            if (averageLapTime > TimeSpan.Zero && 
+            if (averageLapTime > TimeSpan.Zero &&
                 timeRemainingInSession > TimeSpan.Zero)
             {
                 TimeSpan timeToCompleteLap = (1 - driverPctOnTrack) * averageLapTime;
 
-                double lapsBeforeRounding = (timeRemainingInSession - timeToCompleteLap) / averageLapTime + 1;
+                const int currentLap = 1;
+                double lapsBeforeRounding = (timeRemainingInSession - timeToCompleteLap) / averageLapTime + currentLap;
 
-                int lapsRemaining = (int) Math.Ceiling(lapsBeforeRounding);
+                int lapsRemaining = (int)Math.Ceiling(lapsBeforeRounding);
 
                 return lapsRemaining;
             }
@@ -36,7 +37,7 @@ namespace Core.Services.FuelCalculator.LapServices
             var timeToCompleteLapLeader = (1 - raceLeaderPctOnTrack) * avgTimeRaceLeader;
 
             var timeRemainingAfterLineCross = timeLeftInSession - timeToCompleteLapLeader;
-            
+
             if (timeRemainingAfterLineCross <= TimeSpan.Zero)
             {
                 if (flag == SessionFlags.Green)

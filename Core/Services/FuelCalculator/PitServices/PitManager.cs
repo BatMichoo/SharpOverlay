@@ -4,7 +4,6 @@ namespace Core.Services.FuelCalculator.PitServices
 {
     public class PitManager : IClear
     {
-        private bool _isInService;
         private bool _hasBegunService;
         private bool _hasCompletedService;
         private bool _hasEnteredPits;
@@ -13,12 +12,12 @@ namespace Core.Services.FuelCalculator.PitServices
 
         public void Clear()
         {
-            _isInService = false;
             _hasBegunService = false;
             _hasCompletedService = false;
             _hasEnteredPits = false;
             _isOnPitRoad = false;
             _isComingOutOfPits = false;
+            HasResetToPits = false;
         }
 
         public bool HasBegunService()
@@ -56,14 +55,14 @@ namespace Core.Services.FuelCalculator.PitServices
 
         public void SetPitServiceStatus(bool isReceivingPitService)
         {
-            if (isReceivingPitService && !_isInService)
+            if (isReceivingPitService && !_hasBegunService)
             {
                 _hasBegunService = true;
-                _isInService = true;
+                _hasCompletedService = false;
             }
-            else if (!isReceivingPitService && _isInService)
+            else if (!isReceivingPitService && _hasBegunService)
             {
-                _isInService = false;
+                _hasBegunService = false;
                 _hasCompletedService = true;
             }
         }

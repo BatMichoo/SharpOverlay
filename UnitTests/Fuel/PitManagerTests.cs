@@ -14,30 +14,39 @@ namespace Tests.Fuel
             _pitManager = new PitManager();
         }
 
-        private void SetStateForExitTest()
+        [TearDown]
+        public void TearDown()
         {
-            // Set up a state that looks like the car is on pit road and has done a service
-            _pitManager.SetPitServiceStatus(true); // Begins service
-            _pitManager.SetPitServiceStatus(false); // Completes service
-            _pitManager.SetPitRoadStatus(false, TrackSurfaces.AproachingPits); // Sets _hasEnteredPits to true
-            _pitManager.SetPitRoadStatus(true, TrackSurfaces.OffTrack); // Sets _isOnPitRoad to true
+            _pitManager.Clear();
         }
 
         [Test]
         public void Clear_ShouldResetAllFlagsToFalse()
         {
-            // Arrange: Set all flags to true/some non-default state
-            SetStateForExitTest();
-            _pitManager.SetPitRoadStatus(false, TrackSurfaces.OnTrack); // Trigger exit, sets _isComingOutOfPits = true
-            _pitManager.HasResetToPits = true;
+            bool isOnPitRoad = true;
+            bool isReceivingService = true;
+            // Set up a state that looks like the car is on pit road and has done a service
+            _pitManager.SetPitRoadStatus(!isOnPitRoad, TrackSurfaces.AproachingPits); // Sets _hasEnteredPits to true
 
-            // Assert before clear
-            Assert.That(_pitManager.HasBegunService(), Is.True);
-            Assert.That(_pitManager.HasFinishedService(), Is.True);
-            Assert.That(_pitManager.HasEnteredPits(), Is.False); // Note: SetPitRoadStatus resets this upon exit
+            Assert.That(_pitManager.HasEnteredPits(), Is.True); // Note: SetPitRoadStatus resets this upon exit
             Assert.That(_pitManager.IsOnPitRoad(), Is.False);
+
+            _pitManager.SetPitRoadStatus(isOnPitRoad, TrackSurfaces.AproachingPits); // Sets _hasEnteredPits to true
+            Assert.That(_pitManager.IsOnPitRoad(), Is.True);
+            Assert.That(_pitManager.HasEnteredPits(), Is.True); // Note: SetPitRoadStatus resets this upon exit
+
+            _pitManager.SetPitServiceStatus(isReceivingService); // Begins service
+            Assert.That(_pitManager.HasBegunService(), Is.True);
+
+            _pitManager.SetPitServiceStatus(!isReceivingService); // Completes service
+            Assert.That(_pitManager.HasBegunService(), Is.False);
+            Assert.That(_pitManager.HasFinishedService(), Is.True);
+
+            _pitManager.SetPitRoadStatus(!isOnPitRoad, TrackSurfaces.OnTrack); // Trigger exit, sets _isComingOutOfPits = true
+            Assert.That(_pitManager.HasEnteredPits(), Is.False); // Note: SetPitRoadStatus resets this upon exit
             Assert.That(_pitManager.IsComingOutOfPits(), Is.True);
-            Assert.That(_pitManager.HasResetToPits, Is.True);
+
+            _pitManager.HasResetToPits = true;
 
             // Act
             _pitManager.Clear();
@@ -125,13 +134,14 @@ namespace Tests.Fuel
             Assert.That(_pitManager.IsOnPitRoad(), Is.False);
 
             // Act
-            _pitManager.SetPitRoadStatus(true, TrackSurfaces.OnTrack); // isOnPitRoad=true, trackSurface=OnTrack
+            _pitManager.SetPitRoadStatus(false, TrackSurfaces.AproachingPits);  // Entering pit road, but not yet on it
+            _pitManager.SetPitRoadStatus(true, TrackSurfaces.AproachingPits);  // On pit road
 
             // Assert
             Assert.That(_pitManager.IsOnPitRoad(), Is.True);
 
             // Act: Should not set again if already true
-            _pitManager.SetPitRoadStatus(true, TrackSurfaces.OnTrack);
+            _pitManager.SetPitRoadStatus(true, TrackSurfaces.AproachingPits);
             Assert.That(_pitManager.IsOnPitRoad(), Is.True);
         }
 
@@ -168,21 +178,11 @@ namespace Tests.Fuel
         {
             // Arrange: Car is on pit road
             _pitManager.SetPitRoadStatus(false, TrackSurfaces.AproachingPits); // _hasEnteredPits = true
-            _pitManager.SetPitRoadStatus(true, TrackSurfaces.OffTrack); // _isOnPitRoad = true
+            _pitManager.SetPitRoadStatus(true, TrackSurfaces.AproachingPits); // _isOnPitRoad = true
 
             // Assert before exit
             Assert.That(_pitManager.IsOnPitRoad(), Is.True);
             Assert.That(_pitManager.HasEnteredPits(), Is.True);
-
-            // Act: isOnPitRoad=false, but surface is one of the exceptions.
-            _pitManager.SetPitRoadStatus(false, surface);
-
-            // Assert: State should remain "on pit road" logic (Note: This logic is slightly suspect, as setting isOnPitRoad=false should usually mean off pit road, but the surface check prevents the flag resets in the else if block).
-            // Since isOnPitRoad=false is passed, the exit logic is triggered, but the 'else if' condition in the source code fails due to the `||` operator with the inverted surface check.
-            // `(trackSurface != TrackSurfaces.InPitStall || trackSurface != TrackSurfaces.AproachingPits)`
-            // If surface is `InPitStall`, the first part is false, but the second part (`InPitStall != AproachingPits`) is true, so the entire condition is true and the car "exits".
-            // The *intended* logic is likely `!(trackSurface == TrackSurfaces.InPitStall || trackSurface == TrackSurfaces.AproachingPits)`.
-            // **Testing the code as written:**
 
             // Act: Car is now off pit road, but surface is one of the exceptions.
             _pitManager.SetPitRoadStatus(false, surface);
@@ -198,8 +198,9 @@ namespace Tests.Fuel
         public void IsComingOutOfPits_ResetIsComingOutOfPits_ShouldToggleFlag()
         {
             // Arrange: Trigger the exit path to set the flag
-            SetStateForExitTest();
-            _pitManager.SetPitRoadStatus(false, TrackSurfaces.OnTrack);
+            _pitManager.SetPitRoadStatus(false, TrackSurfaces.AproachingPits); // Approaching pits
+            _pitManager.SetPitRoadStatus(true, TrackSurfaces.AproachingPits); // Entering pit lane
+            _pitManager.SetPitRoadStatus(false, TrackSurfaces.AproachingPits); // Exiting pit lane
 
             // Assert before reset
             Assert.That(_pitManager.IsComingOutOfPits(), Is.True);

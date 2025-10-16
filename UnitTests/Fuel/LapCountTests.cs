@@ -18,7 +18,7 @@ namespace Tests.Fuel
         [TestCase(0.5f,  // Halfway around the track
             120.0,  // 2 minutes remaining
             60.0,  // 60 second average lap time
-            2)]  // (120 - (1 - 0.5) * 60) / 60 + 1 = (120 - 30) / 60 + 1 = 1.5 + 1 = 2.5. Ceil(2.5) = 3. Wait, there's a problem in the expectation/formula...
+            3)]  // (120 - (1 - 0.5) * 60) / 60 + 1 = (120 - 30) / 60 + 1 = 1.5 + 1 = 2.5. Ceil(2.5) = 3. Wait, there's a problem in the expectation/formula...
                  // Let's re-run the math based on the code:
                  // 1. timeToCompleteLap = (1 - 0.5) * 60s = 30s
                  // 2. lapsBeforeRounding = (120s - 30s) / 60s + 1 = 90 / 60 + 1 = 1.5 + 1 = 2.5
@@ -26,7 +26,7 @@ namespace Tests.Fuel
         [TestCase(0.0f,  // At the start/finish line
             120.0,
             60.0,
-            3)]  // (120 - 60) / 60 + 1 = 1 + 1 = 2.0. Ceil(2.0) = 2. Wait, what did I miss? The user code says:
+            2)]  // (120 - 60) / 60 + 1 = 1 + 1 = 2.0. Ceil(2.0) = 2. Wait, what did I miss? The user code says:
                  // lapsBeforeRounding = (timeRemainingInSession - timeToCompleteLap) / averageLapTime + 1;
                  // If 120s left, 60s lap. PctOnTrack = 0.0. TimeToComplete = 60s.
                  // (120s - 60s) / 60s + 1 = 1 + 1 = 2.0. Ceil(2.0) = 2. 
@@ -55,7 +55,7 @@ namespace Tests.Fuel
         [TestCase(0.9f,  // 90% on track (6s to finish)
             30.0,  // 30 seconds remaining
             60.0,  // 60 second average lap time
-            1)]  // TimeToComplete = 6s. (30 - 6) / 60 + 1 = 0.4 + 1 = 1.4. Ceil(1.4) = 2. Wait, 2 laps?
+            2)]  // TimeToComplete = 6s. (30 - 6) / 60 + 1 = 0.4 + 1 = 1.4. Ceil(1.4) = 2. Wait, 2 laps?
                  // 30s left. Lap finishes at 6s. 24s left. 
                  // Next lap takes 60s. Finishes at 84s total, 54s after timer hits zero.
                  // A race typically ends after the leader completes the lap in which time runs out.
@@ -229,28 +229,28 @@ namespace Tests.Fuel
         }
 
         [Test]
-        public void CalculateLapsRemainingMultiClass_PlayerFasterThanLeader()
+        public void CalculateLapsRemainingMultiClass()
         {
             // Arrange
             // Time Left: 120 seconds.
             var timeLeft = TimeSpan.FromSeconds(120);
 
-            // Leader: 0.0f on track (90s to finish). Avg 90s.
-            var avgLeader = TimeSpan.FromSeconds(90);
-            float pctLeader = 0.0f;
+            // Leader: 0.1f on track (55s to finish). Avg 55s.
+            var avgLeader = TimeSpan.FromSeconds(55);
+            float pctLeader = 0.1f;
 
-            // Player: 0.0f on track (60s to finish). Avg 60s.
-            var avgPlayer = TimeSpan.FromSeconds(60);
+            // Player: 0.0f on track (61s to finish). Avg 61s.
+            var avgPlayer = TimeSpan.FromSeconds(61);
             float pctPlayer = 0.0f;
 
-            // Leader Laps: No time adjustment needed (120 - 90 = 30s. 30s !> 90s)
-            // Leader Laps Remaining: CalculateLapsRemaining(0.0f, 120s, 90s)
-            // TimeToCompleteLap (Leader) = 90s. (120 - 90) / 90 + 1 = 1.333... Ceil(1.333...) = 2.
-            // timeRequiredForLeader = 2 * 90s = 180s.
+            // Leader Laps: No time adjustment needed (120 - 55 = 65s. 65s > 55s)
+            // Leader Laps Remaining: CalculateLapsRemaining(0.1f, 120s, 55s)
+            // TimeToCompleteLap (Leader) = 55s. (120 - 55) / 55 + 1 = 2.... Ceil(2....) = 3.
+            // timeRequiredForLeader = 3 * 55s = 165s.
 
-            // Player Laps: CalculateLapsRemaining(0.0f, 180s, 60s)
-            // TimeToCompleteLap (Player) = 60s.
-            // LapsBeforeRounding = (180s - 60s) / 60s + 1 = 2 + 1 = 3.
+            // Player Laps: CalculateLapsRemaining(0.0f, 165s, 61s)
+            // TimeToCompleteLap (Player) = 61s.
+            // LapsBeforeRounding = (165s - 61s) / 61s + 1 = 2... + 1 = 3.
             // Ceil(3) = 3.
 
             // Act
@@ -259,6 +259,21 @@ namespace Tests.Fuel
 
             // Assert
             Assert.That(result, Is.EqualTo(3));
+        }
+
+        [Test]
+        public void MultiClass_Subsession_80560308_ShouldReturn_11Laps() {
+            var timeLeft = TimeSpan.FromMinutes(25);
+
+            var avgLeader = TimeSpan.FromSeconds(128.241);
+            float pctLeader = 0.0f;
+
+            var avgPlayer = TimeSpan.FromSeconds(140.896);
+            float pctPlayer = -0.1f;
+
+            int laps = _calculator.CalculateLapsRemainingMultiClass(timeLeft, pctLeader, pctPlayer, avgLeader, avgPlayer, SessionFlags.Green);
+
+            Assert.That(laps, Is.EqualTo(11));
         }
     }
 }

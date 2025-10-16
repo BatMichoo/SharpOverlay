@@ -13,16 +13,6 @@ namespace Tests.Fuel
             _tracker = new PitTimeTracker();
         }
 
-        // Helper to access the private list for verification
-        private List<TimeSpan> GetPitStopDurationsState()
-        {
-            // Use reflection or a wrapper method if this were a production class.
-            // Since we are writing tests for the class, we will test the public accessors (like GetAvgPitStopTime)
-            // and infer the state, or use a workaround if absolutely necessary, but here we can rely on
-            // GetAvgPitStopTime to confirm internal state.
-            return null; // Not strictly needed if GetAvgPitStopTime is sufficient
-        }
-
         [Test]
         public void InitialState_ShouldBeCorrect()
         {
