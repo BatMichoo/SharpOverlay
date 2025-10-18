@@ -6,11 +6,13 @@
     xmlns:models="clr-namespace:Core.Models;assembly=Core"
     d:DataContext="{d:DesignInstance Type=models:FuelViewModel}"
     mc:Ignorable="d"
-    Title="Fuel Calculator" Height="100" Width="230"
+    Title="Fuel Calculator" Height="120" Width="280"
     WindowStyle="None"
     FontFamily="pack://application:,,,/Presentation.Fonts;component/Fonts/#EurostileExtendedBlack"
     AllowsTransparency="True"
     Background="Transparent"
+    FontSize="15"
+    SizeChanged="Window_SizeChanged"
 >
 
     <WindowChrome.WindowChrome>

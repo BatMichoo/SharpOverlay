@@ -34,7 +34,7 @@
             Grid.Row="0" Grid.Column="1"
             IsChecked="{Binding IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Positioning mode" />
+        <Label Grid.Row="1" Grid.Column="0" Content="Positioning Mode" />
         <ToggleButton x:Name="TestModeToggle" Grid.Row="1" Grid.Column="1"
             ToolTip="Toggle to render the bars and position them"
             IsChecked="{Binding IsInTestMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

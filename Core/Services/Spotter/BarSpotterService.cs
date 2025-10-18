@@ -59,14 +59,13 @@ namespace Core.Services.Spotter
                 var driver = new Driver()
                 {
                     CarIdx = racer.CarIdx,
-                    Name = racer.UserName
                 };
 
                 if (driver.CarIdx == e.SessionInfo.Player.DriverCarIdx)
                 {
                     _me = driver;
                 }
-                else if (driver.Name != "Pace Car")
+                else if (driver.CarIdx != e.SessionInfo.Player.PaceCarIdx)
                 {
                     _drivers.Add(driver);
                 }

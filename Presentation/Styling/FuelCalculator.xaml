@@ -20,10 +20,10 @@
     <Style x:Key="RefuelRequiredTextBlockStyle" TargetType="TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="Foreground" Value="LightGreen" />
+        <Setter Property="Foreground" Value="{StaticResource GreenBrush}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding DoesRequireRefueling}" Value="true">
-                <Setter Property="Foreground" Value="Red" />
+                <Setter Property="Foreground" Value="{StaticResource RedBrush}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>

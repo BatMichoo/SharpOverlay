@@ -33,7 +33,7 @@
             IsChecked="{Binding IsEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
         />
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Test" />
+        <Label Grid.Row="1" Grid.Column="0" Content="Positioning Mode" />
         <ToggleButton x:Name="WindTestToggleButton"
             Grid.Row="1"
             Grid.Column="1"

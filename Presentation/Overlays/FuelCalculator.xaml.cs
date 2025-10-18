@@ -40,7 +40,7 @@ namespace Presentation.Overlays
             {
                 Strategies = new ObservableCollection<StrategyViewModel>{
                     new StrategyViewModel{ Name = "FULL"},
-                    new StrategyViewModel{ Name = "LAST"},
+                    new StrategyViewModel{ Name = "LAST", RefuelAmount = 1},
                     new StrategyViewModel{ Name = "5L"},
                 },
             };
@@ -88,6 +88,13 @@ namespace Presentation.Overlays
                 _fuelService.FuelUpdated -= _fuelDebugWindow!.ExecuteOnFuelUpdated;
                 _fuelDebugWindow.Hide();
                 _fuelDebugWindow = null;
+            }
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (FontSize / e.NewSize.Height != 0.125) {
+                FontSize = e.NewSize.Height * 0.125;
             }
         }
     }

@@ -11,6 +11,9 @@
     <Color x:Key="ActiveButton">#FF5A5A5A</Color>
     <Color x:Key="Warning">#ff3c3c</Color>
     <Color x:Key="WarningAccent">#ff2828</Color>
+    <Color x:Key="Green">#FF33CC00</Color>
+    <Color x:Key="Red">#FFE1251B</Color>
+
 
     <Color x:Key="OverlayPanel">#FF12121B</Color>
     <Color x:Key="AccentYellow">#FFD900</Color>
@@ -31,6 +34,8 @@
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource Warning}" />
     <SolidColorBrush x:Key="WarningAccentBrush" Color="{StaticResource WarningAccent}" />
     <SolidColorBrush x:Key="ActiveButtonBrush" Color="{StaticResource ActiveButton}" />
+    <SolidColorBrush x:Key="GreenBrush" Color="{StaticResource Green}" />
+    <SolidColorBrush x:Key="RedBrush" Color="{StaticResource Red}" />
 
     <SolidColorBrush x:Key="AccentYellowBrush" Color="{StaticResource AccentYellow}" />
     <SolidColorBrush x:Key="OverlayPanelBrush" Color="{StaticResource OverlayPanel}" />
