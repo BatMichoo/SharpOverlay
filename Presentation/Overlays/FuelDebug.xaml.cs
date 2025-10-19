@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Core.Events;
 using Core.Services.FuelCalculator;
 
 namespace Presentation.Overlays

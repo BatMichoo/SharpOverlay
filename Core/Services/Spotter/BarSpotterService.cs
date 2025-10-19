@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Core.Events;
+﻿using Core.Events;
 using Core.Models;
 using iRacingSdkWrapper;
 
@@ -9,7 +8,7 @@ namespace Core.Services.Spotter
     {
         private const int _carLengthInM = 5;
         private const int _outOfFrameOffset = 1;
-        private readonly List<Driver> _drivers = [];
+        private readonly Dictionary<int, Driver> _drivers = [];
         private Driver _me = new();
         private double _trackLengthInM;
         private Driver? _closest;
@@ -52,31 +51,33 @@ namespace Core.Services.Spotter
 
         private void ParseDrivers(SdkWrapper.SessionUpdatedEventArgs e)
         {
-            _drivers.Clear();
-
             foreach (var racer in e.SessionInfo.Drivers)
             {
-                var driver = new Driver()
+                if (!_drivers.TryGetValue(racer.CarIdx, out _))
                 {
-                    CarIdx = racer.CarIdx,
-                };
+                    var driver = new Driver()
+                    {
+                        CarIdx = racer.CarIdx
+                    };
 
-                if (driver.CarIdx == e.SessionInfo.Player.DriverCarIdx)
-                {
-                    _me = driver;
-                }
-                else if (driver.CarIdx != e.SessionInfo.Player.PaceCarIdx)
-                {
-                    _drivers.Add(driver);
+                    if (driver.CarIdx == e.SessionInfo.Player.DriverCarIdx)
+                    {
+                        _me = driver;
+                    }
+                    else if (driver.CarIdx != e.SessionInfo.Player.PaceCarIdx)
+                    {
+                        _drivers.Add(driver.CarIdx, driver);
+                    }
                 }
             }
         }
 
         private void OnTelemetry(object? sender, TelemetryEventArgs e)
         {
-            var driverTrackPct = e.SimOutput.CarIdxTrackDistPct;
+            var driverTrackPct = e.TelemetryOutput.CarIdxTrackDistPct;
+            var driverLapNumbers = e.TelemetryOutput.CarIdxLapCompleted;
 
-            CalculateRelativeDistanceForAllDrivers(driverTrackPct);
+            CalculateRelativeDistanceForAllDrivers(driverTrackPct, driverLapNumbers);
 
             _closest = FindClosest();
 
@@ -86,7 +87,7 @@ namespace Core.Services.Spotter
 
             var centeredOffset = GetOffsetInPercentage();
 
-            OnBarUpdated?.Invoke(this, new BarSpotterEventArgs(centeredOffset, e.SimOutput.CarLeftRight));
+            OnBarUpdated?.Invoke(this, new BarSpotterEventArgs(centeredOffset, e.TelemetryOutput.CarLeftRight));
 
         }
 
@@ -105,22 +106,36 @@ namespace Core.Services.Spotter
 
         private Driver FindClosest()
         {
-            var closest = _drivers.MinBy(d => Math.Abs(d.RelativeLapDistancePct));
+            var closest = _drivers.MinBy(d => Math.Abs(d.Value.RelativeLapDistancePct));
 
-            return closest ?? new Driver()
+            return closest.Value ?? new Driver()
             {
                 RelativeLapDistancePct = 2
             };
         }
 
-        private void CalculateRelativeDistanceForAllDrivers(float[] driverTrackPct)
+        private void CalculateRelativeDistanceForAllDrivers(float[] driverTrackPct, int[] driverLapNumbers)
         {
             _me.LapDistancePct = driverTrackPct[_me.CarIdx];
+            _me.CurrentLap = driverLapNumbers[_me.CarIdx];
 
-            foreach (var driver in _drivers)
+            foreach ((int driverIdx, Driver driver) in _drivers)
             {
-                driver.LapDistancePct = driverTrackPct[driver.CarIdx];
-                driver.RelativeLapDistancePct = driver.LapDistancePct - _me.LapDistancePct;
+                driver.CurrentLap = driverLapNumbers[driverIdx];
+                driver.LapDistancePct = driverTrackPct[driverIdx];
+
+                if (_me.CurrentLap == driver.CurrentLap)
+                {
+                    driver.RelativeLapDistancePct = driver.LapDistancePct - _me.LapDistancePct;
+                }
+                else if (_me.CurrentLap > driver.CurrentLap)
+                {
+                    driver.RelativeLapDistancePct = driver.LapDistancePct - (_me.LapDistancePct + 1);
+                }
+                else
+                {
+                    driver.RelativeLapDistancePct = (driver.LapDistancePct + 1) - _me.LapDistancePct;
+                }
             }
         }
 

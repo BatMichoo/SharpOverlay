@@ -17,14 +17,14 @@ namespace Core.Utilities.Telemetries
         float[] CarIdxPctOnTrack { get; }
 
         void Clear();
-        void ParseCurrentSessionNumber(SimulationOutputDTO telemetry);
-        void ParsePlayerCarClassId(SimulationOutputDTO telemetry);
-        void ParsePlayerCarIdx(SimulationOutputDTO telemetry);
-        void ParsePlayerPctOnTrack(SimulationOutputDTO telemetry);
-        void ParsePositionCarIdxInPlayerClass(SimulationOutputDTO telemetry, int paceCarIdx);
-        void ParsePositionCarIdxForWholeRace(SimulationOutputDTO telemetry, int paceCarIdx);
-        SessionFlags GetSessionFlag(SimulationOutputDTO telemetry);
-        void ParseCarIdxOnTrack(SimulationOutputDTO telemetry);
-        void ParseCarIdxLastPitLap(SimulationOutputDTO telemetry, int paceCarIdx);
+        void ParseCurrentSessionNumber(TelemetryOutputDTO telemetry);
+        void ParsePlayerCarClassId(TelemetryOutputDTO telemetry);
+        void ParsePlayerCarIdx(TelemetryOutputDTO telemetry);
+        void ParsePlayerPctOnTrack(TelemetryOutputDTO telemetry);
+        void ParsePositionCarIdxInPlayerClass(TelemetryOutputDTO telemetry, int paceCarIdx);
+        void ParsePositionCarIdxForWholeRace(TelemetryOutputDTO telemetry, int paceCarIdx);
+        SessionFlags GetSessionFlag(TelemetryOutputDTO telemetry);
+        void ParseCarIdxOnTrack(TelemetryOutputDTO telemetry);
+        void ParseCarIdxLastPitLap(TelemetryOutputDTO telemetry, int paceCarIdx);
     }
 }

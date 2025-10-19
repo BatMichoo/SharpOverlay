@@ -14,7 +14,6 @@
     <Color x:Key="Green">#FF33CC00</Color>
     <Color x:Key="Red">#FFE1251B</Color>
 
-
     <Color x:Key="OverlayPanel">#FF12121B</Color>
     <Color x:Key="AccentYellow">#FFD900</Color>
     <Color x:Key="DarkGray">#FF3E3E3E</Color>

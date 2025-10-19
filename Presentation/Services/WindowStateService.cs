@@ -21,7 +21,7 @@ namespace Presentation.Services
 
         public void OnTelemetryChange(object? sender, TelemetryEventArgs args)
         {
-            _windowState.Update(args.SimOutput.IsOnTrack);
+            _windowState.Update(args.TelemetryOutput.IsOnTrack);
 
             RaiseEventIfNewData();
         }

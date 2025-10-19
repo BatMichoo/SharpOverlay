@@ -95,22 +95,22 @@ namespace Presentation.Overlays
             SetColorPercentageLabels();
         }
 
-        private void UpdateInputs(SimulationOutputDTO simOutput)
+        private void UpdateInputs(TelemetryOutputDTO telemetryOutput)
         {
             if (_settings.UseRawValues)
             {
-                input.Brake = simOutput.BrakeRaw * 100;
-                input.Throttle = simOutput.ThrottleRaw * 100;
-                input.Clutch = (1 - simOutput.ClutchRaw) * 100;
+                input.Brake = telemetryOutput.BrakeRaw * 100;
+                input.Throttle = telemetryOutput.ThrottleRaw * 100;
+                input.Clutch = (1 - telemetryOutput.ClutchRaw) * 100;
             }
             else
             {
-                input.Brake = simOutput.Brake * 100;
-                input.Throttle = simOutput.Throttle * 100;
-                input.Clutch = (1 - simOutput.Clutch) * 100;
+                input.Brake = telemetryOutput.Brake * 100;
+                input.Throttle = telemetryOutput.Throttle * 100;
+                input.Clutch = (1 - telemetryOutput.Clutch) * 100;
             }
 
-            input.Steering = simOutput.SteeringWheelAngle * 10 + 50;
+            input.Steering = telemetryOutput.SteeringWheelAngle * 10 + 50;
 
             if (BrakePercentage.IsVisible)
                 BrakePercentage.Content = $"Brake: {Math.Round(input.Brake, 0)} %";
@@ -140,11 +140,11 @@ namespace Presentation.Overlays
 
         private void IracingWrapper_TelemetryUpdated(object? sender, TelemetryEventArgs e)
         {
-            UpdateInputs(e.SimOutput);
+            UpdateInputs(e.TelemetryOutput);
             AddInputsToStreamers(input);
             InputPlot.Refresh();
 
-            absActive = e.SimOutput.BrakeABSactive;
+            absActive = e.TelemetryOutput.BrakeABSactive;
             if (_settings.ShowABS)
             {
                 ABSFlash();

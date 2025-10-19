@@ -1,4 +1,6 @@
-﻿namespace Core.Services.FuelCalculator
+﻿using Core.Events;
+
+namespace Core.Services.FuelCalculator
 {
     public interface IFuelService
     {

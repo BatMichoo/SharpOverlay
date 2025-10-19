@@ -18,7 +18,7 @@ namespace Core.Utilities.Telemetries
 
         public Dictionary<int, int> CarIdxLastPitLap => throw new NotImplementedException();
 
-        public void ParsePositionCarIdxForWholeRace(SimulationOutputDTO telemetry, int paceCarIdx)
+        public void ParsePositionCarIdxForWholeRace(TelemetryOutputDTO telemetry, int paceCarIdx)
         {
             var carIdxPositions = telemetry.CarIdxPosition;
 
@@ -39,7 +39,7 @@ namespace Core.Utilities.Telemetries
             }
         }
 
-        public void ParsePositionCarIdxInPlayerClass(SimulationOutputDTO telemetry, int paceCarIdx)
+        public void ParsePositionCarIdxInPlayerClass(TelemetryOutputDTO telemetry, int paceCarIdx)
         {
             var carIdxClass = telemetry.CarIdxClass;
             var carIdxPositions = telemetry.CarIdxPosition;
@@ -64,28 +64,28 @@ namespace Core.Utilities.Telemetries
             }
         }
 
-        public void ParseCarIdxOnTrack(SimulationOutputDTO telemetry)
+        public void ParseCarIdxOnTrack(TelemetryOutputDTO telemetry)
         {
             CarIdxPctOnTrack = telemetry.CarIdxLapDistPct;
         }
 
 
 
-        public void ParsePlayerCarIdx(SimulationOutputDTO telemetry)
+        public void ParsePlayerCarIdx(TelemetryOutputDTO telemetry)
         {
             int playerIdx = telemetry.PlayerCarIdx;
 
             PlayerCarIdx = playerIdx;
         }
 
-        public void ParsePlayerCarClassId(SimulationOutputDTO telemetry)
+        public void ParsePlayerCarClassId(TelemetryOutputDTO telemetry)
         {
             int playerCarClass = telemetry.CarIdxClass[PlayerCarIdx];
 
             PlayerCarClassId = playerCarClass;
         }
 
-        public void ParseCurrentSessionNumber(SimulationOutputDTO telemetry)
+        public void ParseCurrentSessionNumber(TelemetryOutputDTO telemetry)
         {
             int currentSessionNumber = telemetry.SessionNum;
 
@@ -118,7 +118,7 @@ namespace Core.Utilities.Telemetries
             return driversLastLaps;
         }
 
-        public SessionFlags GetSessionFlag(SimulationOutputDTO telemetry)
+        public SessionFlags GetSessionFlag(TelemetryOutputDTO telemetry)
         {
             var flag = telemetry.SessionFlag;
 
@@ -136,12 +136,12 @@ namespace Core.Utilities.Telemetries
             CurrentSessionNumber = 0;
         }
 
-        public void ParsePlayerPctOnTrack(SimulationOutputDTO telemetry)
+        public void ParsePlayerPctOnTrack(TelemetryOutputDTO telemetry)
         {
             PlayerPctOnTrack = telemetry.CarIdxLapDistPct[PlayerCarIdx];
         }
 
-        public void ParseCarIdxLastPitLap(SimulationOutputDTO telemetry, int paceCarIdx)
+        public void ParseCarIdxLastPitLap(TelemetryOutputDTO telemetry, int paceCarIdx)
         {
             throw new NotImplementedException();
         }

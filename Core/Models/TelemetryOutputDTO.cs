@@ -4,12 +4,12 @@ using static Core.Models.Enums;
 
 namespace Core.Models
 {
-    public class SimulationOutputDTO
+    public class TelemetryOutputDTO
     {
-        public SimulationOutputDTO()
+        public TelemetryOutputDTO()
         {
         }
-        public SimulationOutputDTO(TelemetryInfo telemetry)
+        public TelemetryOutputDTO(TelemetryInfo telemetry)
         {
             FuelLevel = telemetry.FuelLevel.Value;
             CurrentLapNumber = telemetry.Lap.Value;

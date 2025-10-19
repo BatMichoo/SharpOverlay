@@ -1,6 +1,6 @@
 ﻿using Core.Models;
 
-namespace Core.Services.FuelCalculator
+namespace Core.Events
 {
     public class FuelEventArgs : EventArgs
     {

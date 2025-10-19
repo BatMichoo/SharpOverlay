@@ -86,13 +86,21 @@
                 ShowAlpha="True" />
 
             <Label Grid.Row="7" Grid.Column="0" Content="Line Width" />
-            <Slider x:Name="inputGraph_lineWidthSlider" Grid.Row="7" Grid.Column="1"
-                Grid.ColumnSpan="2"
-                Maximum="10"
-                Minimum="1"
-                Value="{Binding LineWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                TickFrequency="1.0"
-                IsEnabled="{Binding IsEnabled, Mode=OneWay}" />
+            <StackPanel Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal"
+                VerticalAlignment="Center" Margin="5,0">
+                <TextBox
+                    Foreground="{StaticResource PrimaryTextBrush}"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                    Text="{Binding Path=LineWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Width="40" Margin="10,0,10,0"
+                />
+                <Slider x:Name="inputGraph_lineWidthSlider"
+                    Maximum="10"
+                    Minimum="1"
+                    Value="{Binding LineWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TickFrequency="1.0"
+                    IsEnabled="{Binding IsEnabled, Mode=OneWay}" />
+            </StackPanel>
 
             <Label Grid.Row="8" Grid.Column="0" Content="Show Clutch" />
             <CheckBox Grid.Row="8" Grid.Column="1"

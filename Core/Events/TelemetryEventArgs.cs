@@ -5,10 +5,10 @@ namespace Core.Events;
 
 public class TelemetryEventArgs : EventArgs
 {
-    public readonly SimulationOutputDTO SimOutput;
+    public readonly TelemetryOutputDTO TelemetryOutput;
 
     public TelemetryEventArgs(TelemetryInfo telemetryInfo)
     {
-        SimOutput = new SimulationOutputDTO(telemetryInfo);
+        TelemetryOutput = new TelemetryOutputDTO(telemetryInfo);
     }
 }

@@ -44,6 +44,7 @@
             VerticalAlignment="Center" Margin="5,0">
             <TextBox
                 Foreground="{StaticResource PrimaryTextBrush}"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                 Text="{Binding Path=BarWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 Width="40" Margin="10,0,10,0"
             />
@@ -61,6 +62,7 @@
             VerticalAlignment="Center" Margin="5,0">
             <TextBox
                 Foreground="{StaticResource PrimaryTextBrush}"
+                HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                 Text="{Binding Path=BarLength, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 Width="40" Margin="10,0,10,0"
             />

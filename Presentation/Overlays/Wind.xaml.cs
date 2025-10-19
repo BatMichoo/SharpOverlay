@@ -71,9 +71,9 @@ namespace Presentation.Overlays
         private void Wrapper_TelemetryUpdated(object? sender, TelemetryEventArgs e)
         {
 
-            windDir = (e.SimOutput.WindDir + Math.PI / 180);
-            yawNorth = e.SimOutput.YawNorth;
-            windSpeed = e.SimOutput.WindVel * 3.6f;
+            windDir = (e.TelemetryOutput.WindDir + Math.PI / 180);
+            yawNorth = e.TelemetryOutput.YawNorth;
+            windSpeed = e.TelemetryOutput.WindVel * 3.6f;
 
             double finalAngle = (windDir - yawNorth) * 57.2958 + 180;
             ((RotateTransform)((TransformGroup)WindDirIcon.RenderTransform).Children[0]).Angle = finalAngle;

@@ -4,7 +4,7 @@ using iRacingSdkWrapper;
 
 namespace Core.Services
 {
-    public class SimReader 
+    public class SimReader
     {
         private readonly SdkWrapper _sdkWrapper;
 
@@ -14,7 +14,7 @@ namespace Core.Services
         {
             _sdkWrapper = new SdkWrapper();
             AdjustTickRate(tickRate);
-            
+
             _sdkWrapper.Connected += ExecuteOnConnected;
             _sdkWrapper.Disconnected += ExecuteOnDisconnected;
             _sdkWrapper.TelemetryUpdated += ExecuteOnTelemetry;
@@ -27,13 +27,15 @@ namespace Core.Services
         {
             _sdkWrapper = new SdkWrapper(filePath);
             AdjustTickRate(tickRate);
-            
+
             _sdkWrapper.Connected += ExecuteOnConnected;
             _sdkWrapper.Disconnected += ExecuteOnDisconnected;
             _sdkWrapper.TelemetryUpdated += ExecuteOnTelemetry;
             _sdkWrapper.SessionUpdated += ExecuteOnSession;
+        }
 
-            _sdkWrapper.Start();
+        public bool ReadNextFrame() {
+            return _sdkWrapper.ProcessTelemetryFrame();
         }
 
         public void AdjustTickRate(int newTickRate)

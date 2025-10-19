@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
+using Core.Events;
 using Core.Models;
 using Core.Services.FuelCalculator;
 using Core.Services.FuelCalculator.Strategies;

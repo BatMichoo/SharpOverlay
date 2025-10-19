@@ -47,5 +47,9 @@ namespace Core.Models
         /// </summary>
         public float RelativeLapDistancePct { get; set; }
 
+        /// <summary>
+        /// The current lap number of this driver.
+        /// </summary>
+        public int CurrentLap { get; set; }
     }
 }
