@@ -32,6 +32,7 @@ namespace Core.Services.FuelCalculator
         // private readonly FinishLineLocator _finishLineLocator;
         private int _lapsRemainingInRace;
         private bool _isRaceStart;
+        private bool _disposed;
 
         public SimReader SimReader { get; }
 
@@ -277,7 +278,7 @@ namespace Core.Services.FuelCalculator
                 }
             }                                                                // WARN:
             else if (_isRaceStart && telemetryOutput.CurrentLapNumber == 2) // Simulator flickers quickly to lap 2 in Race
-                                                                             // after the going through start finish line on lap 0 to 1
+                                                                            // after the going through start finish line on lap 0 to 1
             {
                 _isRaceStart = false;
             }
@@ -466,6 +467,33 @@ namespace Core.Services.FuelCalculator
                 HasBegunService = _pitManager.HasBegunService(),
                 HasCompletedService = _pitManager.HasFinishedService(),
             };
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+
+            if (disposing)
+            {
+                if (SimReader != null)
+                {
+                    SimReader.OnConnected -= ExecuteOnConnected;
+                    SimReader.OnDisconnected -= ExecuteOnDisconnected;
+                    SimReader.OnTelemetryUpdated -= ExecuteOnTelemetryEvent;
+                    SimReader.OnSessionUpdated -= ExecuteOnSessionEvent;
+
+                    (SimReader as IDisposable)?.Dispose();
+                }
+
+            }
+
+            _disposed = true;
         }
     }
 }

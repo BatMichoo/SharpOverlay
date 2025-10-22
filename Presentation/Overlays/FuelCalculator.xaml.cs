@@ -47,9 +47,20 @@ namespace Presentation.Overlays
             };
         }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            _windowStateService.WindowStateChanged -= OnWindowStateChange;
+            _windowStateService.Dispose();
+
+            _fuelService.FuelUpdated -= OnFuelUpdate;
+            _fuelService.Dispose();
+
+            base.OnClosed(e);
+        }
+
         private void OnWindowStateChange(object? sender, WindowStateEventArgs e)
         {
-            if ((e.IsOpen || e.IsInTestMode) && e.IsEnabled)
+            if ((e.IsOpen || e.IsInTestMode))
             {
                 Show();
             }
@@ -94,7 +105,8 @@ namespace Presentation.Overlays
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (FontSize / e.NewSize.Height != 0.125) {
+            if (FontSize / e.NewSize.Height != 0.125)
+            {
                 FontSize = e.NewSize.Height * 0.125;
             }
         }

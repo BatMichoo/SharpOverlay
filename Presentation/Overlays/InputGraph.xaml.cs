@@ -51,9 +51,22 @@ namespace Presentation.Overlays
             SetColorPercentageLabels();
         }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            _windowStateService.WindowStateChanged -= OnWindowStateChange;
+            _windowStateService.Dispose();
+
+            _simReader.OnTelemetryUpdated -= IracingWrapper_TelemetryUpdated;
+            _simReader.Dispose();
+
+            _settings.PropertyChanged -= Graph_HandleSettingUpdated;
+
+            base.OnClosed(e);
+        }
+
         private void OnWindowStateChange(object? sender, WindowStateEventArgs e)
         {
-            if ((e.IsOpen || e.IsInTestMode) && e.IsEnabled)
+            if ((e.IsOpen || e.IsInTestMode))
             {
                 Show();
             }

@@ -4,7 +4,7 @@ using iRacingSdkWrapper;
 
 namespace Core.Services.Spotter
 {
-    public class BarSpotterService : IClear
+    public class BarSpotterService : IClear, IDisposable
     {
         private const int _carLengthInM = 5;
         private const int _outOfFrameOffset = 1;
@@ -13,6 +13,8 @@ namespace Core.Services.Spotter
         private double _trackLengthInM;
         private Driver? _closest;
         private double _offset = _outOfFrameOffset;
+        private bool _disposed;
+
         public SimReader SimReader { get; }
 
         public BarSpotterService()
@@ -106,12 +108,17 @@ namespace Core.Services.Spotter
 
         private Driver FindClosest()
         {
-            var closest = _drivers.MinBy(d => Math.Abs(d.Value.RelativeLapDistancePct));
-
-            return closest.Value ?? new Driver()
+            Driver closest = new Driver()
             {
                 RelativeLapDistancePct = 2
             };
+
+            if (_drivers.Count > 0)
+            {
+                closest = _drivers.MinBy(d => Math.Abs(d.Value.RelativeLapDistancePct)).Value;
+            }
+
+            return closest;
         }
 
         private void CalculateRelativeDistanceForAllDrivers(float[] driverTrackPct, int[] driverLapNumbers)
@@ -142,6 +149,31 @@ namespace Core.Services.Spotter
         public double GetOffsetInPercentage()
         {
             return _offset * 100;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+
+            if (disposing)
+            {
+                if (SimReader != null)
+                {
+                    SimReader.OnTelemetryUpdated -= OnTelemetry;
+                    SimReader.OnSessionUpdated -= OnSession;
+                    SimReader.OnDisconnected -= OnDisconnect;
+
+                    (SimReader as IDisposable)?.Dispose();
+                }
+            }
+
+            _disposed = true;
         }
     }
 }

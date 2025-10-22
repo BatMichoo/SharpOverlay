@@ -39,6 +39,19 @@ namespace Presentation.Overlays
 
         }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            _service.OnBarUpdated -= OnBarUpdate;
+            _service.Dispose();
+
+            _windowStateService.WindowStateChanged -= OnWindowStateChange;
+            _windowStateService.Dispose();
+
+            barSpotterWindow.SizeChanged -= Window_SetBarEqualToWindow;
+
+            base.OnClosed(e);
+        }
+
         private void OnConnect(object? sender, EventArgs e)
         {
             CarClear();
@@ -46,11 +59,11 @@ namespace Presentation.Overlays
 
         private void OnWindowStateChange(object? sender, WindowStateEventArgs e)
         {
-            if (e.IsInTestMode && e.IsEnabled)
+            if (e.IsInTestMode)
             {
                 HandleTestMode();
             }
-            else if (e.IsOpen && e.IsEnabled)
+            else if (e.IsOpen)
             {
                 Show();
             }

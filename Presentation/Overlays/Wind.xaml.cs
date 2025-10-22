@@ -44,9 +44,22 @@ namespace Presentation.Overlays
             WindDirIcon.Foreground = new SolidColorBrush(StartColor);
         }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            _windowStateService.WindowStateChanged -= OnWindowStateChanged;
+            _windowStateService.Dispose();
+
+            _simReader.OnTelemetryUpdated -= Wrapper_TelemetryUpdated;
+            _simReader.Dispose();
+
+            _settings.PropertyChanged -= settings_TestMode;
+
+            base.OnClosed(e);
+        }
+
         private void OnWindowStateChanged(object? sender, WindowStateEventArgs e)
         {
-            if ((e.IsOpen || e.IsInTestMode) && e.IsEnabled)
+            if ((e.IsOpen || e.IsInTestMode))
             {
                 Show();
             }

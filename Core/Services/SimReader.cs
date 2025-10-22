@@ -4,9 +4,10 @@ using iRacingSdkWrapper;
 
 namespace Core.Services
 {
-    public class SimReader
+    public class SimReader : IDisposable
     {
         private readonly SdkWrapper _sdkWrapper;
+        private bool _disposed;
 
         public int DriverId => _sdkWrapper.DriverId;
 
@@ -34,7 +35,8 @@ namespace Core.Services
             _sdkWrapper.SessionUpdated += ExecuteOnSession;
         }
 
-        public bool ReadNextFrame() {
+        public bool ReadNextFrame()
+        {
             return _sdkWrapper.ProcessTelemetryFrame();
         }
 
@@ -77,6 +79,34 @@ namespace Core.Services
         protected virtual void ExecuteOnSession(object? sender, SdkWrapper.SessionUpdatedEventArgs e)
         {
             OnSessionUpdated?.Invoke(this, e);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+
+            if (disposing)
+            {
+                _sdkWrapper.Stop();
+
+                if (_sdkWrapper != null)
+                {
+                    _sdkWrapper.Connected -= ExecuteOnConnected;
+                    _sdkWrapper.Disconnected -= ExecuteOnDisconnected;
+                    _sdkWrapper.TelemetryUpdated -= ExecuteOnTelemetry;
+                    _sdkWrapper.SessionUpdated -= ExecuteOnSession;
+                }
+            }
+
+            // No unmanaged resources to free.
+
+            _disposed = true;
         }
     }
 }

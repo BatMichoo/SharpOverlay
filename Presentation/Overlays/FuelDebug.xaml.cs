@@ -25,5 +25,12 @@ namespace Presentation.Overlays
         {
             DataContext = e.ViewModel;
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _service.FuelUpdated -= ExecuteOnFuelUpdated;
+
+            base.OnClosed(e);
+        }
     }
 }

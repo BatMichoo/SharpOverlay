@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Reflection;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using Dark.Net;
@@ -7,6 +9,7 @@ using Presentation.Models.ViewModels;
 using Presentation.Services;
 using Velopack;
 using Velopack.Sources;
+using WinRT;
 
 namespace Presentation;
 
@@ -70,28 +73,16 @@ public partial class MainWindow : Window
         OverlaysService.UpdateEnabledStatus();
         foreach (Overlay o in OverlaysService.Overlays)
         {
-            if (o.IsEnabled && !o.IsOpen)
+            if (o.IsEnabled && o.Window is null)
             {
-                o.Window = (Window?)Activator.CreateInstance(o.Type);
-                var showMethod = o.Window?.GetType().GetMethod("Show");
-                showMethod?.Invoke(o.Window, null);
-                o.IsOpen = true;
-
-                o.Window!.Visibility = Visibility.Hidden;
+                o.Window = (Window)Activator.CreateInstance(o.Type)!;
             }
-            else if (!o.IsEnabled && o.IsOpen)
+            else if (!o.IsEnabled)
             {
-                var closeMethod = o.Window?.GetType().GetMethod("Close");
-                closeMethod?.Invoke(o.Window, null);
+                o.Window!.Close();
                 o.Window = null;
-                o.IsOpen = false;
             }
         }
-    }
-
-    private void Window_Toggle(object sender, RoutedEventArgs e)
-    {
-        HandleOverlayStatus();
     }
 
     // Minimizes the window when the minimize button is clicked

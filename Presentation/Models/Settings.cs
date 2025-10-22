@@ -20,8 +20,13 @@ namespace Presentation.Models
             get => _isEnabled;
             set
             {
+                bool prevState = _isEnabled;
                 _isEnabled = value;
-                OnPropertyChange(nameof(IsEnabled));
+                if (prevState != value)
+                {
+                    MainWindow.HandleOverlayStatus();
+                }
+                // OnPropertyChange(nameof(IsEnabled));
             }
         }
 
@@ -70,7 +75,7 @@ namespace Presentation.Models
 
         private SolidColorBrush? _threeWideBarColor;
 
-        
+
         public double BarWidth
         {
             get => _barWidth;
@@ -322,6 +327,18 @@ namespace Presentation.Models
 
     public class FuelSettings : BaseSettings
     {
+        private SolidColorBrush? _backgroundColor;
+
+        public SolidColorBrush? BackgroundColor
+
+        {
+            get => _backgroundColor;
+            set
+            {
+                _backgroundColor = value;
+                OnPropertyChange(nameof(BackgroundColor));
+            }
+        }
     }
 
     public class GeneralSettings : INotifyPropertyChanged
