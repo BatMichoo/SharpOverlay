@@ -10,10 +10,10 @@ namespace Presentation.Overlays
     public partial class FuelDebugWindow : Window
     {
         private readonly IFuelService _service;
+
         public FuelDebugWindow(IFuelService dataService)
         {
             _service = dataService;
-
             _service.FuelUpdated += ExecuteOnFuelUpdated;
 
             Topmost = true;
@@ -29,6 +29,7 @@ namespace Presentation.Overlays
         protected override void OnClosed(EventArgs e)
         {
             _service.FuelUpdated -= ExecuteOnFuelUpdated;
+            _service.Dispose();
 
             base.OnClosed(e);
         }

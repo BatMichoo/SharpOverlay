@@ -4,7 +4,14 @@ using Colors = System.Windows.Media.Colors;
 
 namespace Presentation.Models
 {
-    public abstract class BaseSettings : INotifyPropertyChanged
+    public interface IBaseSettings : INotifyPropertyChanged
+    {
+        bool IsEnabled { get; set; }
+        bool IsOpen { get; set; }
+        bool IsInTestMode { get; set; }
+    }
+
+    public abstract class BaseSettings : IBaseSettings
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 

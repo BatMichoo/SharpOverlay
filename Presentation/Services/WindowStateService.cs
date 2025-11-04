@@ -10,11 +10,11 @@ namespace Presentation.Services
     {
         private bool _disposed;
         private readonly TrackedWindowState _windowState;
-        private readonly SimReader _reader;
-        private readonly BaseSettings _settings;
+        private readonly ISimReader _reader;
+        private readonly IBaseSettings _settings;
         public event EventHandler<WindowStateEventArgs>? WindowStateChanged;
 
-        public WindowStateService(SimReader reader, BaseSettings settings)
+        public WindowStateService(ISimReader reader, IBaseSettings settings)
         {
             _settings = settings;
             _settings.PropertyChanged += OnPropertyChange;
@@ -22,6 +22,11 @@ namespace Presentation.Services
             _reader.OnTelemetryUpdated += OnTelemetryChange;
 
             _windowState = new TrackedWindowState(settings);
+        }
+
+        public void Initialize()
+        {
+            RaiseEventIfNewData();
         }
 
         public void OnTelemetryChange(object? sender, TelemetryEventArgs args)
@@ -42,8 +47,8 @@ namespace Presentation.Services
         {
             if (_windowState.RequiresChange)
             {
-                RaiseEvent();
                 _windowState.CompleteChange();
+                RaiseEvent();
             }
         }
 
@@ -72,8 +77,6 @@ namespace Presentation.Services
                 {
                     _reader.OnTelemetryUpdated -= OnTelemetryChange;
                 }
-
-                (_windowState as IDisposable)?.Dispose();
             }
 
             _disposed = true;

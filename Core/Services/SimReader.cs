@@ -1,10 +1,11 @@
 ﻿using Core.Events;
+using Core.Models;
 using Core.Utilities;
 using iRacingSdkWrapper;
 
 namespace Core.Services
 {
-    public class SimReader : IDisposable
+    public class SimReader : ISimReader 
     {
         private readonly SdkWrapper _sdkWrapper;
         private bool _disposed;
@@ -45,20 +46,20 @@ namespace Core.Services
             _sdkWrapper.TelemetryUpdateFrequency = newTickRate;
         }
 
-        public SessionInfo GetSessionInfo()
+        public SessionOutputDTO GetSessionInfo()
         {
-            return _sdkWrapper.GetSessionInfoWithoutEvent();
+            return new SessionOutputDTO(_sdkWrapper.GetSessionInfoWithoutEvent());
         }
 
-        public TelemetryInfo GetTelemetryInfo()
+        public TelemetryOutputDTO GetTelemetryInfo()
         {
-            return _sdkWrapper.GetTelemetryInfoWithoutEvent();
+            return new TelemetryOutputDTO(_sdkWrapper.GetTelemetryInfoWithoutEvent());
         }
 
         public event EventHandler? OnConnected;
         public event EventHandler? OnDisconnected;
         public event EventHandler<TelemetryEventArgs>? OnTelemetryUpdated;
-        public event EventHandler<SdkWrapper.SessionUpdatedEventArgs>? OnSessionUpdated;
+        public event EventHandler<SessionEventArgs>? OnSessionUpdated;
 
         protected virtual void ExecuteOnConnected(object? sender, EventArgs args)
         {
@@ -78,7 +79,8 @@ namespace Core.Services
 
         protected virtual void ExecuteOnSession(object? sender, SdkWrapper.SessionUpdatedEventArgs e)
         {
-            OnSessionUpdated?.Invoke(this, e);
+            var eventArgs = new SessionEventArgs(e.SessionInfo);
+            OnSessionUpdated?.Invoke(this, eventArgs);
         }
 
         public void Dispose()

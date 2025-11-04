@@ -6,11 +6,11 @@ namespace Presentation.Services
 {
     public class TrackedWindowState
     {
-        public TrackedWindowState(BaseSettings settings)
+        public TrackedWindowState(IBaseSettings settings)
         {
-            // UpdateIsOpen(settings.IsOpen);
-            // UpdateIsInTestMode(settings.IsInTestMode);
-            // UpdateIsInDebugMode(false);
+            UpdateIsOpen(settings.IsOpen);
+            UpdateIsInTestMode(settings.IsInTestMode);
+            UpdateIsInDebugMode(false);
         }
 
         public bool IsOpen { get; private set; }
@@ -19,15 +19,17 @@ namespace Presentation.Services
 
         public bool RequiresChange { get; private set; }
 
-        public void Update(bool isCarOnTrack)
+        public bool Update(bool isCarOnTrack)
         {
             if (!IsInTestMode)
             {
                 UpdateIsOpen(isCarOnTrack);
             }
+
+            return RequiresChange;
         }
 
-        public void Update(PropertyChangedEventArgs eventArgs)
+        public bool Update(PropertyChangedEventArgs eventArgs)
         {
             string propertyName = eventArgs.PropertyName!;
 
@@ -43,6 +45,8 @@ namespace Presentation.Services
             {
                 UpdateIsInDebugMode(!IsInDebugMode);
             }
+
+            return RequiresChange;
         }
 
         public void CompleteChange()

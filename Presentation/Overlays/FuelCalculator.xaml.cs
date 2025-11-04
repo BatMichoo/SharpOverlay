@@ -27,10 +27,11 @@ namespace Presentation.Overlays
         public FuelCalculatorWindow()
         {
             _fuelService = new FuelCalculatorService();
-            _windowStateService = new WindowStateService(_fuelService.SimReader, _settings);
-
             _fuelService.FuelUpdated += OnFuelUpdate;
+
+            _windowStateService = new WindowStateService(_fuelService.SimReader, _settings);
             _windowStateService.WindowStateChanged += OnWindowStateChange;
+            _windowStateService.Initialize();
 
             JotService.tracker.Track(this);
 
@@ -60,7 +61,7 @@ namespace Presentation.Overlays
 
         private void OnWindowStateChange(object? sender, WindowStateEventArgs e)
         {
-            if ((e.IsOpen || e.IsInTestMode))
+            if (e.IsOpen || e.IsInTestMode)
             {
                 Show();
             }
@@ -71,7 +72,11 @@ namespace Presentation.Overlays
 
             if (e.IsInDebugMode)
             {
-                _fuelDebugWindow = new FuelDebugWindow(_fuelService);
+                if (_fuelDebugWindow is null)
+                {
+                    _fuelDebugWindow = new FuelDebugWindow(_fuelService);
+                }
+
                 _fuelDebugWindow.Show();
             }
             else if (_fuelDebugWindow is not null && !e.IsInDebugMode)

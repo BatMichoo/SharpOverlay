@@ -9,6 +9,7 @@ using iRacingSdkWrapper;
 using iRacingSdkWrapper.Bitfields;
 using SharpOverlay.Strategies;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Core.Services.FuelCalculator
 {
@@ -34,11 +35,11 @@ namespace Core.Services.FuelCalculator
         private bool _isRaceStart;
         private bool _disposed;
 
-        public SimReader SimReader { get; }
+        public ISimReader SimReader { get; }
 
         public FuelCalculatorService() : this(new SimReader()) { }
 
-        public FuelCalculatorService(SimReader reader)
+        public FuelCalculatorService(ISimReader reader)
         {
             SimReader = reader;
             _sessionParser = new SessionParser();
@@ -186,9 +187,9 @@ namespace Core.Services.FuelCalculator
                             || sessionState == SessionStates.Warmup;
         }
 
-        private void ExecuteOnSessionEvent(object? sender, SdkWrapper.SessionUpdatedEventArgs eventArgs)
+        private void ExecuteOnSessionEvent(object? sender, SessionEventArgs eventArgs)
         {
-            var sessionInfo = eventArgs.SessionInfo;
+            var sessionInfo = eventArgs.SessionOutput;
 
             _sessionParser.ParseEventType(sessionInfo);
 
@@ -292,6 +293,7 @@ namespace Core.Services.FuelCalculator
                 }
 
                 _lapTracker.StartNewLap(lapNumber, telemetryOutput.FuelLevel);
+                Debug.WriteLine($"Starting new lap after service {lapNumber}");
 
                 currentLap = _lapTracker.GetCurrentLap()!;
                 currentLap.IsOutLap = true;
@@ -299,9 +301,11 @@ namespace Core.Services.FuelCalculator
                 _strategyList.ForEach(s => s.UpdateRefuel(currentLap.StartingFuel, _lapsRemainingInRace));
 
                 _pitManager.ResetFinishedServiceStatus();
+                _pitManager.HasResetToPits = false;
             }
             else if (_pitManager.HasBegunService())
             {
+                Debug.WriteLine($"Beginning Service!");
                 if (telemetryOutput.SessionFlag != SessionFlags.Repair)
                 {
                     _lapTracker.CompleteCurrentLap(telemetryOutput.FuelLevel, telemetryOutput.LastLapTime);
@@ -311,8 +315,9 @@ namespace Core.Services.FuelCalculator
 
                 _pitManager.ResetBegunServiceStatus();
             }
-            else if (_pitManager.IsResettingToPits(telemetryOutput.EnterExitResetButton))
+            else if (_pitManager.IsResettingToPits(telemetryOutput.EnterExitResetButton) && !_pitManager.HasResetToPits)
             {
+                Debug.WriteLine($"Resetting to pits!");
                 currentLap.StartingFuel = telemetryOutput.FuelLevel;
 
                 _pitManager.HasResetToPits = true;
@@ -328,10 +333,12 @@ namespace Core.Services.FuelCalculator
                 {
                     if (currentLap.Number != 0)
                     {
+                        Debug.WriteLine($"Completing lap :{currentLap.Number} not on pit road.");
                         _lapTracker.CompleteCurrentLap(telemetryOutput.FuelLevel, telemetryOutput.LastLapTime);
                     }
 
                     _lapTracker.StartNewLap(telemetryOutput.CurrentLapNumber, telemetryOutput.FuelLevel);
+                        Debug.WriteLine($"Starting new lap :{telemetryOutput.CurrentLapNumber} {_pitManager.IsOnPitRoad()} on pit road.");
                 }
                 else if (_pitManager.HasResetToPits)
                 {

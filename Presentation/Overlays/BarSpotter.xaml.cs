@@ -34,9 +34,9 @@ namespace Presentation.Overlays
 
             _windowStateService = new WindowStateService(_service.SimReader, _settings);
             _windowStateService.WindowStateChanged += OnWindowStateChange;
+            _windowStateService.Initialize();
 
             barSpotterWindow.SizeChanged += Window_SetBarEqualToWindow;
-
         }
 
         protected override void OnClosed(EventArgs e)
@@ -108,7 +108,7 @@ namespace Presentation.Overlays
                 }
                 else if (spotter == Spotter.CarLeft)
                 {
-                    var pixelOffset = PixelOffset(e.Offset);
+                    var pixelOffset = PixelOffset(e.OffsetPct);
 
                     RenderLeftBar(pixelOffset);
 
@@ -117,7 +117,7 @@ namespace Presentation.Overlays
                 }
                 else if (spotter == Spotter.CarRight)
                 {
-                    var pixelOffset = PixelOffset(e.Offset);
+                    var pixelOffset = PixelOffset(e.OffsetPct);
 
                     RenderRightBar(pixelOffset);
                     rightCanvas.Visibility = Visibility.Visible;
@@ -151,9 +151,9 @@ namespace Presentation.Overlays
             rightCanvas.Visibility = Visibility.Hidden;
         }
 
-        private double PixelOffset(double offset)
+        private double PixelOffset(double offsetPct)
         {
-            var pixelOffset = grid.ActualHeight * -offset;
+            var pixelOffset = grid.ActualHeight * -offsetPct;
             return pixelOffset;
         }
 

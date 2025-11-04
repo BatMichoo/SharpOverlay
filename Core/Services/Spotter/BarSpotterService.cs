@@ -1,6 +1,5 @@
 ﻿using Core.Events;
 using Core.Models;
-using iRacingSdkWrapper;
 
 namespace Core.Services.Spotter
 {
@@ -15,11 +14,18 @@ namespace Core.Services.Spotter
         private double _offset = _outOfFrameOffset;
         private bool _disposed;
 
-        public SimReader SimReader { get; }
+        public ISimReader SimReader { get; private set; }
 
-        public BarSpotterService()
+        public BarSpotterService() : this(new SimReader())
         {
-            SimReader = new SimReader();
+            SimReader.OnTelemetryUpdated += OnTelemetry;
+            SimReader.OnSessionUpdated += OnSession;
+            SimReader.OnDisconnected += OnDisconnect;
+        }
+
+        public BarSpotterService(ISimReader simReader)
+        {
+            SimReader = simReader;
             SimReader.OnTelemetryUpdated += OnTelemetry;
             SimReader.OnSessionUpdated += OnSession;
             SimReader.OnDisconnected += OnDisconnect;
@@ -41,19 +47,19 @@ namespace Core.Services.Spotter
             _offset = _outOfFrameOffset;
         }
 
-        private void OnSession(object? sender, SdkWrapper.SessionUpdatedEventArgs e)
+        private void OnSession(object? sender, SessionEventArgs e)
         {
             if (_trackLengthInM == 0)
             {
-                _trackLengthInM = e.SessionInfo.WeekendInfo.TrackLength * 1000;
+                _trackLengthInM = e.SessionOutput.WeekendInfo.TrackLength * 1000;
             }
 
-            ParseDrivers(e);
+            ParseDrivers(e.SessionOutput);
         }
 
-        private void ParseDrivers(SdkWrapper.SessionUpdatedEventArgs e)
+        private void ParseDrivers(SessionOutputDTO e)
         {
-            foreach (var racer in e.SessionInfo.Drivers)
+            foreach (var racer in e.Drivers)
             {
                 if (!_drivers.TryGetValue(racer.CarIdx, out _))
                 {
@@ -62,11 +68,11 @@ namespace Core.Services.Spotter
                         CarIdx = racer.CarIdx
                     };
 
-                    if (driver.CarIdx == e.SessionInfo.Player.DriverCarIdx)
+                    if (driver.CarIdx == e.Player.DriverCarIdx)
                     {
                         _me = driver;
                     }
-                    else if (driver.CarIdx != e.SessionInfo.Player.PaceCarIdx)
+                    else if (driver.CarIdx != e.Player.PaceCarIdx)
                     {
                         _drivers.Add(driver.CarIdx, driver);
                     }
@@ -77,9 +83,8 @@ namespace Core.Services.Spotter
         private void OnTelemetry(object? sender, TelemetryEventArgs e)
         {
             var driverTrackPct = e.TelemetryOutput.CarIdxTrackDistPct;
-            var driverLapNumbers = e.TelemetryOutput.CarIdxLapCompleted;
 
-            CalculateRelativeDistanceForAllDrivers(driverTrackPct, driverLapNumbers);
+            CalculateRelativeDistanceForAllDrivers(driverTrackPct);
 
             _closest = FindClosest();
 
@@ -90,7 +95,6 @@ namespace Core.Services.Spotter
             var centeredOffset = GetOffsetInPercentage();
 
             OnBarUpdated?.Invoke(this, new BarSpotterEventArgs(centeredOffset, e.TelemetryOutput.CarLeftRight));
-
         }
 
         private double CalculateOffset(float closestRelativePct, double distancePerPercentOfTrack)
@@ -108,40 +112,45 @@ namespace Core.Services.Spotter
 
         private Driver FindClosest()
         {
-            Driver closest = new Driver()
-            {
-                RelativeLapDistancePct = 2
-            };
-
+            Driver closest;
             if (_drivers.Count > 0)
             {
                 closest = _drivers.MinBy(d => Math.Abs(d.Value.RelativeLapDistancePct)).Value;
+            }
+            else
+            {
+                closest = new Driver()
+                {
+                    RelativeLapDistancePct = 2
+                };
             }
 
             return closest;
         }
 
-        private void CalculateRelativeDistanceForAllDrivers(float[] driverTrackPct, int[] driverLapNumbers)
+        private void CalculateRelativeDistanceForAllDrivers(float[] driverTrackPct)
         {
             _me.LapDistancePct = driverTrackPct[_me.CarIdx];
-            _me.CurrentLap = driverLapNumbers[_me.CarIdx];
+            double twoCarLenghtsPctOfTrack = (_carLengthInM / _trackLengthInM) * 2;
 
             foreach ((int driverIdx, Driver driver) in _drivers)
             {
-                driver.CurrentLap = driverLapNumbers[driverIdx];
                 driver.LapDistancePct = driverTrackPct[driverIdx];
 
-                if (_me.CurrentLap == driver.CurrentLap)
+                bool isAroundFinishLine = _me.LapDistancePct <= twoCarLenghtsPctOfTrack || _me.LapDistancePct >= 1 - twoCarLenghtsPctOfTrack;
+
+                driver.RelativeLapDistancePct = driver.LapDistancePct - _me.LapDistancePct;
+
+                if (isAroundFinishLine)
                 {
-                    driver.RelativeLapDistancePct = driver.LapDistancePct - _me.LapDistancePct;
-                }
-                else if (_me.CurrentLap > driver.CurrentLap)
-                {
-                    driver.RelativeLapDistancePct = driver.LapDistancePct - (_me.LapDistancePct + 1);
-                }
-                else
-                {
-                    driver.RelativeLapDistancePct = (driver.LapDistancePct + 1) - _me.LapDistancePct;
+                    if (_me.LapDistancePct <= twoCarLenghtsPctOfTrack && driver.LapDistancePct >= 1 - twoCarLenghtsPctOfTrack)
+                    {
+                        driver.RelativeLapDistancePct = driver.LapDistancePct - (_me.LapDistancePct + 1);
+                    }
+                    else if (_me.LapDistancePct >= 1 - twoCarLenghtsPctOfTrack && driver.LapDistancePct <= twoCarLenghtsPctOfTrack)
+                    {
+                        driver.RelativeLapDistancePct = (driver.LapDistancePct + 1) - _me.LapDistancePct;
+                    }
                 }
             }
         }

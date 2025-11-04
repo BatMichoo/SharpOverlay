@@ -28,7 +28,7 @@ namespace Presentation.Overlays
         private ScottPlot.Color currentBgColor;
 
         private readonly InputGraphSettings _settings = App.appSettings.InputGraphSettings;
-        private readonly SimReader _simReader = new SimReader();
+        private readonly ISimReader _simReader = new SimReader();
         private readonly WindowStateService _windowStateService;
 
         public InputGraph()
@@ -37,9 +37,11 @@ namespace Presentation.Overlays
             Services.JotService.tracker.Track(this);
 
             _windowStateService = new WindowStateService(_simReader, _settings);
+            _windowStateService.WindowStateChanged += OnWindowStateChange;
+            _windowStateService.Initialize();
 
             _simReader.OnTelemetryUpdated += IracingWrapper_TelemetryUpdated;
-            _windowStateService.WindowStateChanged += OnWindowStateChange;
+
             _settings.PropertyChanged += Graph_HandleSettingUpdated;
 
             HookStreamer(ref throttleStreamer, _settings.ThrottleColor, true);
@@ -53,20 +55,20 @@ namespace Presentation.Overlays
 
         protected override void OnClosed(EventArgs e)
         {
+            _settings.PropertyChanged -= Graph_HandleSettingUpdated;
+
             _windowStateService.WindowStateChanged -= OnWindowStateChange;
             _windowStateService.Dispose();
 
             _simReader.OnTelemetryUpdated -= IracingWrapper_TelemetryUpdated;
             _simReader.Dispose();
 
-            _settings.PropertyChanged -= Graph_HandleSettingUpdated;
-
             base.OnClosed(e);
         }
 
         private void OnWindowStateChange(object? sender, WindowStateEventArgs e)
         {
-            if ((e.IsOpen || e.IsInTestMode))
+            if (e.IsOpen || e.IsInTestMode)
             {
                 Show();
             }
