@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using Dark.Net;
@@ -22,9 +23,9 @@ namespace Presentation
             InitializeComponent();
             this.DataContext = new SettingsViewModel();
 
-            Services.JotService.tracker.Track(App.appSettings);
-            Services.JotService.tracker.PersistAll();
-            DarkNet.Instance.SetWindowThemeWpf(this, Dark.Net.Theme.Auto);
+            JotService.tracker.Track(App.appSettings);
+            JotService.tracker.PersistAll();
+            DarkNet.Instance.SetWindowThemeWpf(this, Theme.Auto);
             InitializeComponent();
             HandleOverlayStatus();
             if (App.appSettings.IsUpdate)
@@ -74,9 +75,9 @@ namespace Presentation
                 {
                     o.Window = (Window)Activator.CreateInstance(o.Type)!;
                 }
-                else if (!o.IsEnabled)
+                else if (!o.IsEnabled && o.Window is not null)
                 {
-                    o.Window!.Close();
+                    o.Window.Close();
                     o.Window = null;
                 }
             }
@@ -105,11 +106,12 @@ namespace Presentation
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            var sInfo = new System.Diagnostics.ProcessStartInfo(e.Uri.ToString())
+            var sInfo = new ProcessStartInfo(e.Uri.ToString())
             {
                 UseShellExecute = true,
             };
-            System.Diagnostics.Process.Start(sInfo);
+
+            Process.Start(sInfo);
         }
     }
 }

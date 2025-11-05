@@ -1,6 +1,5 @@
 using Core.Events;
 using Core.Models;
-using iRacingSdkWrapper;
 
 namespace Core.Services
 {

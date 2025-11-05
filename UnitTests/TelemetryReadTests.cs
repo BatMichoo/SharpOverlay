@@ -1,6 +1,5 @@
 using Core.Events;
 using Core.Services;
-using Core.Services.FuelCalculator;
 
 namespace Tests
 {

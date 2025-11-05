@@ -1,6 +1,5 @@
 using Core.Models;
 using Core.Services.FuelCalculator.LapServices;
-using iRacingSdkWrapper.JsonModels;
 
 namespace Tests.Fuel
 {

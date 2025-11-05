@@ -64,15 +64,6 @@ namespace Presentation.Services
             }
         }
 
-        // private void UpdateIsEnabled(bool isEnabled)
-        // {
-        //     if (IsEnabled == !isEnabled)
-        //     {
-        //         IsEnabled = isEnabled;
-        //         RaiseChange();
-        //     }
-        // }
-
         private void UpdateIsInTestMode(bool isInTestMode)
         {
             if (IsInTestMode == !isInTestMode)

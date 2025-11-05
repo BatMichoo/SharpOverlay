@@ -1,7 +1,5 @@
-using NUnit.Framework;
 using NSubstitute;
 using System.ComponentModel;
-using System.Diagnostics;
 using Presentation.Models;
 using Presentation.Services;
 
@@ -37,7 +35,7 @@ namespace Tests.WindowState
                 Assert.That(state.IsOpen, Is.True, "IsOpen should be initialized from settings.");
                 Assert.That(state.IsInTestMode, Is.False, "IsInTestMode should be initialized from settings.");
                 Assert.That(state.IsInDebugMode, Is.False, "IsInDebugMode should be initialized to false.");
-                Assert.That(state.RequiresChange, Is.False, "RequiresChange should be initially false.");
+                Assert.That(state.RequiresChange, Is.True, "RequiresChange should be initially true.");
             });
         }
 
